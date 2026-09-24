@@ -1,0 +1,18 @@
+{% if error %}
+<div class="layout layout--col layout--center"><span class="description text--center">{{ error }}</span></div>
+{% else %}
+<div class="layout layout--col layout--center gap--xsmall">
+  {% if has_team and team.game %}
+  {% assign g = team.game %}
+  <span class="title" style="white-space: nowrap;">{% if g.state == "pre" %}{{ g.us.abbr }} {{ g.opp_label }} · {{ g.when }}{% else %}{{ g.us.abbr }} {{ g.us.score }}-{{ g.them.score }} {{ g.them.abbr }} · {{ g.status }}{% endif %}</span>
+  <div class="divider"></div>
+  {% endif %}
+  <span class="value value--small value--tnums" style="white-space: nowrap;">{{ me.points_text }}{% if has_opp %}-{{ opp.points_text }}{% endif %}</span>
+  <span class="label label--small {% if is_live %}label--inverted{% endif %}">{% if win_pct %}{{ win_pct }}% win · {% endif %}{{ me.left }} left</span>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <span class="title">Sunday</span>
+  <span class="instance">Wk {{ week }}</span>
+</div>

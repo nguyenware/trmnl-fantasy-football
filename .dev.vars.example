@@ -1,0 +1,11 @@
+# Copy to .dev.vars for `npm run dev`; in production use `npx wrangler secret put <NAME>`.
+
+# Optional: require ?key=<value> on every data endpoint (and on /yahoo/login).
+ACCESS_KEY=
+
+# Yahoo (only once Yahoo has approved your app for the Fantasy API).
+YAHOO_CLIENT_ID=
+YAHOO_CLIENT_SECRET=
+
+# If the team dashboard also has an ACCESS_KEY, pass it along for Sunday mode.
+TEAM_DASHBOARD_KEY=

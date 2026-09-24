@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "trmnl-fantasy-football",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "observability": { "enabled": true },
+
+  // Player snapshot (from the GitHub Action) and the Yahoo OAuth token.
+  // No id needed: Wrangler creates the namespace on first deploy (automatic
+  // provisioning). Its id is then shown under Workers & Pages → KV.
+  "kv_namespaces": [
+    { "binding": "FANTASY_KV" }
+  ],
+
+  // Sunday mode: call the team dashboard Worker directly (same account, no
+  // public hop). Remove this block if you don't deploy trmnl-team-dashboard,
+  // or set TEAM_DASHBOARD_URL instead.
+  "services": [
+    { "binding": "TEAM_DASHBOARD", "service": "trmnl-team-dashboard" }
+  ],
+
+  "vars": {
+    "TIMEZONE": "America/Los_Angeles",
+    "SUNDAY_TEAM": "sea"
+    // Optional defaults so polling URLs can be short:
+    // "SLEEPER_LEAGUE_ID": "",
+    // "SLEEPER_USERNAME": "",
+    // "YAHOO_LEAGUE_ID": ""
+  }
+}

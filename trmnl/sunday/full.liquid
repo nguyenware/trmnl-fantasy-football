@@ -1,0 +1,91 @@
+{% if error %}
+<div class="layout layout--col layout--center gap--small">
+  <span class="title">Sunday</span>
+  <span class="description text--center">{{ error }}</span>
+</div>
+{% else %}
+<div class="layout layout--row layout--top gap--medium">
+
+  {% comment %} ---------- Left: your NFL team ---------- {% endcomment %}
+  <div class="flex flex--col gap--small h--full" style="width: 40%; flex-shrink: 0; align-items: stretch;">
+    {% if has_team and team.game %}
+    {% assign g = team.game %}
+    <span class="label label--small" data-clamp="1">{% if team.is_live %}Live{% elsif team.is_upcoming %}Next{% else %}Final{% endif %}{% if g.label != "" %} · {{ g.label }}{% endif %}{% if g.tv != "" %} · {{ g.tv }}{% endif %}</span>
+    <div class="flex flex--row" style="align-items: center; justify-content: space-between;">
+      <div class="flex flex--col" style="align-items: center; width: 28%; flex-shrink: 0;">
+        <img src="{{ g.us.logo }}" alt="" style="width: 40px; height: 40px; object-fit: contain;">
+        <span class="title title--small">{{ g.us.abbr }}</span>
+      </div>
+      {% if g.state == "pre" %}
+      <div class="flex flex--col" style="align-items: center;">
+        <span class="title">{{ g.when }}</span>
+        <span class="label label--small label--inverted">in {{ g.countdown }}</span>
+      </div>
+      {% else %}
+      <span class="value value--tnums" style="white-space: nowrap;">{{ g.us.score }}-{{ g.them.score }}</span>
+      {% endif %}
+      <div class="flex flex--col" style="align-items: center; width: 28%; flex-shrink: 0;">
+        <img src="{{ g.them.logo }}" alt="" style="width: 40px; height: 40px; object-fit: contain;">
+        <span class="title title--small">{{ g.them.abbr }}</span>
+      </div>
+    </div>
+    {% if g.state != "pre" %}
+    <div class="flex flex--row gap--small" style="justify-content: center;">
+      <span class="label {% if g.state == 'in' %}label--inverted{% else %}label--outline{% endif %}">{{ g.status }}</span>
+      {% if g.win_pct %}<span class="label label--small label--outline">Win {{ g.win_pct }}%</span>{% endif %}
+    </div>
+    {% endif %}
+    {% if g.situation %}
+    <span class="title title--small text--center" data-clamp="1">{% if g.situation.possession %}{{ g.situation.possession }} ball · {% endif %}{{ g.situation.text }}</span>
+    <span class="description" data-clamp="3">{{ g.situation.last_play }}</span>
+    {% elsif g.state == "pre" %}
+    {% if g.odds %}<span class="description text--center" data-clamp="1">{{ g.odds }}{% if g.win_pct %} · Win {{ g.win_pct }}%{% endif %}</span>{% endif %}
+    {% if g.weather %}<span class="description text--center" data-clamp="1">{{ g.weather }}</span>{% endif %}
+    {% elsif g.article %}
+    <span class="description" data-clamp="3">{{ g.article }}</span>
+    {% endif %}
+    {% if g.leader_pairs.size > 0 %}
+    <div class="divider"></div>
+    {% for p in g.leader_pairs %}
+    <span class="label label--small" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><b>{{ p.label }}</b> {{ p.us.name }} · {{ p.us.line }}</span>
+    {% endfor %}
+    {% endif %}
+    {% elsif has_team %}
+    <span class="title">{{ team.headline }}</span>
+    {% else %}
+    <span class="description">Set TEAM_DASHBOARD_URL (or a TEAM_DASHBOARD service binding) to show your NFL team here.</span>
+    {% endif %}
+  </div>
+
+  {% comment %} ---------- Right: your fantasy matchup ---------- {% endcomment %}
+  <div class="flex flex--col gap--xsmall h--full" style="flex: 1; min-width: 0; align-items: stretch;">
+    <div class="flex flex--row gap--small" style="align-items: center; justify-content: space-between;">
+      <div class="flex flex--col" style="min-width: 0; align-items: flex-start;">
+        <span class="title title--small" data-clamp="1">{{ me.name }}</span>
+        {% if has_opp %}<span class="label label--small" data-clamp="1">vs {{ opp.name }}</span>{% endif %}
+      </div>
+      <div class="flex flex--col" style="align-items: flex-end; flex-shrink: 0;">
+        <span class="value value--small value--tnums" style="white-space: nowrap;">{{ me.points_text }}{% if has_opp %}-{{ opp.points_text }}{% endif %}</span>
+        <span class="label label--small {% if is_live %}label--inverted{% endif %}">{% if win_pct %}{{ win_pct }}% win · {% endif %}{{ me.left }} left{% if has_opp %} v {{ opp.left }}{% endif %}</span>
+      </div>
+    </div>
+    <table class="table table--xsmall">
+      <tbody>
+      {% for r in rows %}
+        <tr>
+          <td><span class="label label--small">{{ r.slot }}</span></td>
+          <td><span class="label label--small" data-clamp="1">{{ r.me.name }}{% if r.me.injury %} ({{ r.me.injury }}){% endif %}</span></td>
+          <td><span class="label label--small" style="white-space: nowrap;">{{ r.me.game }}</span></td>
+          <td style="text-align: right;"><span class="label label--small {% if r.me.playing %}label--inverted{% endif %}">{% if r.me.state == "pre" %}({{ r.me.projected_text | default: "-" }}){% else %}{{ r.me.points_text }}{% endif %}</span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <span class="title">Sunday · {{ league.name }}</span>
+  <span class="instance">{% if has_team %}{{ team.team.abbr }} {{ team.team.record }} · {% endif %}Wk {{ week }} · {{ updated_at }}</span>
+</div>

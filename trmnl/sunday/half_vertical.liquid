@@ -1,0 +1,39 @@
+{% if error %}
+<div class="layout layout--col layout--center"><span class="description text--center">{{ error }}</span></div>
+{% else %}
+<div class="layout layout--col gap--small" style="justify-content: flex-start; align-items: stretch;">
+  {% if has_team and team.game %}
+  {% assign g = team.game %}
+  <div class="flex flex--col" style="align-items: center;">
+    {% if g.state == "pre" %}
+    <span class="title">{{ g.us.abbr }} {{ g.opp_label }}</span>
+    <span class="value value--small">{{ g.when }}</span>
+    {% else %}
+    <span class="value value--large value--tnums" style="white-space: nowrap;">{{ g.us.abbr }} {{ g.us.score }}-{{ g.them.score }} {{ g.them.abbr }}</span>
+    <span class="label label--small {% if g.state == 'in' %}label--inverted{% else %}label--outline{% endif %}">{{ g.status }}</span>
+    {% endif %}
+  </div>
+  <div class="divider"></div>
+  {% endif %}
+  <div class="flex flex--col" style="align-items: center;">
+    <span class="value value--small value--tnums" style="white-space: nowrap;">{{ me.points_text }}{% if has_opp %}-{{ opp.points_text }}{% endif %}</span>
+    <span class="label label--small">{% if win_pct %}{{ win_pct }}% win · {% endif %}{{ me.left }} left</span>
+  </div>
+  <table class="table table--xsmall">
+    <tbody>
+    {% for r in rows limit: 9 %}
+      <tr>
+        <td><span class="label label--small">{{ r.slot }}</span></td>
+        <td><span class="label label--small" data-clamp="1">{{ r.me.name }}</span></td>
+        <td style="text-align: right;"><span class="label label--small {% if r.me.playing %}label--inverted{% endif %}">{% if r.me.state == "pre" %}{{ r.me.game }}{% else %}{{ r.me.points_text }}{% endif %}</span></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <span class="title">Sunday</span>
+  <span class="instance">Wk {{ week }}</span>
+</div>

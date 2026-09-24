@@ -1,0 +1,26 @@
+name: Player snapshot
+
+# Refreshes the player/projection snapshot in Workers KV.
+# Needs repository secrets CLOUDFLARE_API_TOKEN (with "Workers KV Storage:
+# Edit"), CLOUDFLARE_ACCOUNT_ID and KV_NAMESPACE_ID.
+on:
+  schedule:
+    - cron: '17 11 * * *'        # daily, early morning Pacific
+    - cron: '47 15,16 * * 0'     # Sunday after inactives for the early and late games
+    - cron: '47 22 * * 1,4'      # before Monday and Thursday night games
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/snapshot.mjs
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          KV_NAMESPACE_ID: ${{ secrets.KV_NAMESPACE_ID }}

@@ -1,0 +1,83 @@
+{% if error %}
+<div class="layout layout--col layout--center gap--small">
+  <span class="title">{{ title | default: "Fantasy football" }}</span>
+  <span class="description text--center">{{ error }}</span>
+</div>
+{% else %}
+<div class="layout layout--col gap--small" style="justify-content: flex-start; align-items: stretch;">
+
+  {% comment %} Scoreboard {% endcomment %}
+  <div class="flex flex--row gap--medium" style="align-items: center;">
+    <div class="flex flex--col" style="flex: 1; min-width: 0; align-items: flex-start;">
+      <span class="title" data-clamp="1">{{ me.name }}</span>
+      <span class="label label--small">{{ me.record }}{% if me.rank %} · #{{ me.rank }}{% endif %}{% if me.projected_text != "" %} · proj {{ me.projected_text }}{% endif %}</span>
+    </div>
+    <div class="flex flex--col" style="align-items: center; flex-shrink: 0;">
+      <span class="value value--large value--tnums" style="white-space: nowrap;">{{ me.points_text }}{% if has_opp %} - {{ opp.points_text }}{% endif %}</span>
+      <span class="label label--small {% if is_live %}label--inverted{% else %}label--outline{% endif %}">{% if is_final %}Final{% elsif is_live %}Live{% else %}Week {{ week }}{% endif %}{% if win_pct %} · {{ win_pct }}% win{% endif %}</span>
+    </div>
+    <div class="flex flex--col" style="flex: 1; min-width: 0; align-items: flex-end;">
+      {% if has_opp %}
+      <span class="title text--right" data-clamp="1">{{ opp.name }}</span>
+      <span class="label label--small">{% if opp.projected_text != "" %}proj {{ opp.projected_text }} · {% endif %}{{ opp.record }}{% if opp.rank %} · #{{ opp.rank }}{% endif %}</span>
+      {% else %}
+      <span class="title">No matchup</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if win_pct %}
+  <div class="progress-bar progress-bar--xsmall">
+    <div class="track"><div class="fill" style="width: {{ win_pct }}%"></div></div>
+  </div>
+  {% endif %}
+
+  {% comment %} Lineups, slot by slot {% endcomment %}
+  <table class="table table--xsmall">
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td style="width: 38%;">
+          {% if r.me.empty %}<span class="label label--small">Empty slot</span>{% else %}
+          <span class="label label--small" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><b>{{ r.me.name }}</b>{% if r.me.injury %} ({{ r.me.injury }}){% endif %} · {{ r.me.team }} · {{ r.me.game }}</span>
+          {% endif %}
+        </td>
+        <td style="width: 8%; text-align: right;">
+          {% if r.me.state == "pre" and r.me.projected_text != "" %}<span class="label label--small">({{ r.me.projected_text }})</span>
+          {% elsif r.me.state == "pre" %}<span class="label label--small">-</span>
+          {% else %}<span class="label label--small {% if r.me.playing %}label--inverted{% endif %}">{{ r.me.points_text }}</span>{% endif %}
+        </td>
+        <td style="width: 8%; text-align: center;"><span class="title title--small">{{ r.slot }}</span></td>
+        <td style="width: 8%;">
+          {% if r.opp %}
+          {% if r.opp.state == "pre" and r.opp.projected_text != "" %}<span class="label label--small">({{ r.opp.projected_text }})</span>
+          {% elsif r.opp.state == "pre" %}<span class="label label--small">-</span>
+          {% else %}<span class="label label--small {% if r.opp.playing %}label--inverted{% endif %}">{{ r.opp.points_text }}</span>{% endif %}
+          {% endif %}
+        </td>
+        <td style="width: 38%;">
+          {% if r.opp %}{% if r.opp.empty %}<span class="label label--small">Empty slot</span>{% else %}
+          <span class="label label--small" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><b>{{ r.opp.name }}</b>{% if r.opp.injury %} ({{ r.opp.injury }}){% endif %} · {{ r.opp.team }} · {{ r.opp.game }}</span>
+          {% endif %}{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="flex flex--row gap--small" style="justify-content: space-between; align-items: center; margin-top: auto;">
+    <span class="label label--small">{% if has_opp and is_final == false %}{{ me.left }} left to play{% if me.playing > 0 %} ({{ me.playing }} now){% endif %}{% endif %}</span>
+    {% if alerts.size > 0 %}
+    <span class="label label--small label--inverted" data-clamp="1">{{ alerts[0] }}</span>
+    {% elsif bench.size > 0 %}
+    <span class="label label--small label--outline" data-clamp="1">Bench: {{ bench[0].name }} {% if is_pre %}{{ bench[0].projected_text }} proj{% else %}{{ bench[0].points_text }}{% endif %}</span>
+    {% endif %}
+    <span class="label label--small">{% if has_opp and is_final == false %}{{ opp.left }} left to play{% endif %}</span>
+  </div>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <span class="title">{{ league.name | default: title }}</span>
+  <span class="instance">Week {{ week }} · {{ league.scoring }} · {{ updated_at }}</span>
+</div>

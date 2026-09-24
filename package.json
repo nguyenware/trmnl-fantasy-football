@@ -1,0 +1,21 @@
+{
+  "name": "trmnl-fantasy-football",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TRMNL plugin backend (Cloudflare Worker): your Sleeper or Yahoo fantasy football matchup, slot by slot, plus a combined Sunday view with your NFL team.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test",
+    "snapshot": "node scripts/snapshot.mjs",
+    "preview": "node scripts/preview.mjs"
+  },
+  "devDependencies": {
+    "liquidjs": "^10.29.0",
+    "wrangler": "^4.139.0"
+  }
+}

@@ -1,0 +1,31 @@
+{% if error %}
+<div class="layout layout--col layout--center"><span class="description text--center">{{ error }}</span></div>
+{% else %}
+<div class="layout layout--row gap--medium">
+  <div class="flex flex--col gap--xsmall" style="width: 50%; align-items: center; justify-content: center;">
+    {% if has_team and team.game %}
+    {% assign g = team.game %}
+    {% if g.state == "pre" %}
+    <span class="title">{{ g.us.abbr }} {{ g.opp_label }}</span>
+    <span class="value value--small">{{ g.when }}</span>
+    {% else %}
+    <span class="value value--large value--tnums" style="white-space: nowrap;">{{ g.us.abbr }} {{ g.us.score }}-{{ g.them.score }} {{ g.them.abbr }}</span>
+    <span class="label label--small {% if g.state == 'in' %}label--inverted{% else %}label--outline{% endif %}">{{ g.status }}</span>
+    {% if g.situation %}<span class="description text--center" data-clamp="1">{{ g.situation.text }}</span>{% endif %}
+    {% endif %}
+    {% else %}
+    <span class="description">No NFL team configured</span>
+    {% endif %}
+  </div>
+  <div class="flex flex--col gap--xsmall" style="flex: 1; align-items: center; justify-content: center;">
+    <span class="value value--large value--tnums" style="white-space: nowrap;">{{ me.points_text }}{% if has_opp %}-{{ opp.points_text }}{% endif %}</span>
+    <span class="label label--small {% if is_live %}label--inverted{% endif %}">{% if is_final %}Final{% elsif is_live %}Live{% else %}Week {{ week }}{% endif %}{% if win_pct %} · {{ win_pct }}% win{% endif %}</span>
+    <span class="description text--center" data-clamp="1">{{ me.left }} left{% if has_opp %} vs {{ opp.left }} · {{ opp.name }}{% endif %}</span>
+  </div>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <span class="title">Sunday</span>
+  <span class="instance">{{ league.name }} · Wk {{ week }}</span>
+</div>

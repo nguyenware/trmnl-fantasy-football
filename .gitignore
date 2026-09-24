@@ -1,0 +1,5 @@
+node_modules/
+preview/
+.wrangler/
+.dev.vars
+/snapshot.json

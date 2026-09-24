@@ -1,0 +1,15 @@
+{% if error %}
+<div class="layout layout--col layout--center"><span class="description text--center">{{ error }}</span></div>
+{% else %}
+<div class="layout layout--col layout--center gap--xsmall">
+  <span class="value value--large value--tnums" style="white-space: nowrap;">{{ me.points_text }}{% if has_opp %}-{{ opp.points_text }}{% endif %}</span>
+  <span class="label label--small {% if is_live %}label--inverted{% else %}label--outline{% endif %}">{% if is_final %}Final{% elsif is_live %}Live{% else %}Week {{ week }}{% endif %}{% if win_pct %} · {{ win_pct }}%{% endif %}</span>
+  {% if has_opp %}<span class="description text--center" data-clamp="1">vs {{ opp.name }}</span>{% endif %}
+  <span class="label label--small">{{ me.left }} left{% if has_opp %} vs {{ opp.left }}{% endif %}</span>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <span class="title">{{ me.name | default: title }}</span>
+  <span class="instance">Wk {{ week }}</span>
+</div>

@@ -1,0 +1,26 @@
+{% if error %}
+<div class="layout layout--col layout--center"><span class="description text--center">{{ error }}</span></div>
+{% else %}
+<div class="layout layout--row gap--medium">
+  <div class="flex flex--col gap--xsmall" style="width: 36%; flex-shrink: 0; justify-content: center; align-items: center;">
+    <span class="value value--large value--tnums" style="white-space: nowrap;">{{ me.points_text }}{% if has_opp %}-{{ opp.points_text }}{% endif %}</span>
+    <span class="label label--small {% if is_live %}label--inverted{% endif %}">{% if is_final %}Final{% elsif is_live %}Live{% else %}Week {{ week }}{% endif %}{% if win_pct %} · {{ win_pct }}% win{% endif %}</span>
+    {% if has_opp %}<span class="description text--center" data-clamp="1">vs {{ opp.name }}</span>{% endif %}
+    <span class="label label--small">{% if me.projected_text != "" %}Proj {{ me.projected_text }}{% if has_opp %}-{{ opp.projected_text }}{% endif %} · {% endif %}{{ me.left }} left</span>
+  </div>
+  <div class="grid grid--cols-2 gap--xsmall" style="flex: 1; min-width: 0; align-content: center;">
+    {% for r in rows limit: 10 %}
+    <div class="flex flex--row gap--xsmall" style="align-items: baseline; min-width: 0;">
+      <span class="label label--small" style="width: 2.6em; flex-shrink: 0;">{{ r.slot }}</span>
+      <span class="label label--small" data-clamp="1" style="flex: 1; min-width: 0;">{{ r.me.name }}{% if r.me.injury %} ({{ r.me.injury }}){% endif %}</span>
+      <span class="label label--small {% if r.me.playing %}label--inverted{% endif %}">{% if r.me.state == "pre" %}{% if r.me.projected_text != "" %}({{ r.me.projected_text }}){% else %}{{ r.me.game }}{% endif %}{% else %}{{ r.me.points_text }}{% endif %}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <span class="title">{{ me.name | default: title }}</span>
+  <span class="instance">{{ league.name }} · Wk {{ week }}</span>
+</div>
