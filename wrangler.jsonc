@@ -6,10 +6,9 @@
   "observability": { "enabled": true },
 
   // Player snapshot (from the GitHub Action) and the Yahoo OAuth token.
-  // No id needed: Wrangler creates the namespace on first deploy (automatic
-  // provisioning). Its id is then shown under Workers & Pages → KV.
+  // KV namespace ids are not secret; this is the snapshot action's KV_NAMESPACE_ID.
   "kv_namespaces": [
-    { "binding": "FANTASY_KV" }
+    { "binding": "FANTASY_KV", "id": "277443a9b5d14992907d9e4c1f4c581e" }
   ],
 
   // Sunday mode: call the team dashboard Worker directly (same account, no

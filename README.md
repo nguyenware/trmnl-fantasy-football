@@ -28,12 +28,12 @@ Your Sleeper league id is in the league's URL on sleeper.com (`sleeper.com/leagu
 ## Deploy (Cloudflare Workers, free plan)
 
 1. Deploy [trmnl-team-dashboard](https://github.com/nguyenware/trmnl-team-dashboard) first if you want Sunday mode. It's wired up through a service binding in `wrangler.jsonc`; remove the `services` block if you skip it.
-2. Deploy this Worker with `npm install && npx wrangler deploy`, or import the repo under **Workers & Pages → Create → Import a repository**. The `FANTASY_KV` namespace is created automatically on the first deploy.
+2. Deploy this Worker with `npm install && npx wrangler deploy`, or import the repo under **Workers & Pages → Create → Import a repository**. `FANTASY_KV` points at the namespace `trmnl-fantasy-football-FANTASY_KV` (id `277443a9b5d14992907d9e4c1f4c581e`); on a different account, delete the `id` and Wrangler creates one on first deploy.
 3. Optionally, `npx wrangler secret put ACCESS_KEY` so only your TRMNL can read your league.
 4. **Player snapshot (recommended).** Names, injuries and projections come from a trimmed snapshot of Sleeper's player list. A scheduled GitHub Action ([`snapshot.yml`](.github/workflows/snapshot.yml)) refreshes it daily and around game windows. Add three repository secrets:
    - `CLOUDFLARE_API_TOKEN`: a token with **Workers KV Storage: Edit**.
    - `CLOUDFLARE_ACCOUNT_ID`.
-   - `KV_NAMESPACE_ID`: the id of `trmnl-fantasy-football-fantasy_kv` (under **Storage & Databases → KV**).
+   - `KV_NAMESPACE_ID`: `277443a9b5d14992907d9e4c1f4c581e`.
 
    Then run the workflow once from the Actions tab. Without a snapshot, starters' names are looked up one at a time and projections are hidden, so it works, just with less detail.
 
