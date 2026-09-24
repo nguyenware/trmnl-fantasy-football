@@ -21,10 +21,10 @@
 
   "vars": {
     "TIMEZONE": "America/Los_Angeles",
-    "SUNDAY_TEAM": "sea"
-    // Optional defaults so polling URLs can be short:
-    // "SLEEPER_LEAGUE_ID": "",
-    // "SLEEPER_USERNAME": "",
+    "SUNDAY_TEAM": "sea",
+    // Defaults so polling URLs can be just /sleeper and /sunday.
+    "SLEEPER_LEAGUE_ID": "1331829412093505536",
+    "SLEEPER_USERNAME": "frenchfryfan"
     // "YAHOO_LEAGUE_ID": ""
   }
 }

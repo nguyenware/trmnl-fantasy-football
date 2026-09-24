@@ -67,7 +67,7 @@ export async function resolveSleeperPlayers(ids, { snapshot: snap, priority = []
     if (p) {
       // IDP scoring varies too much between leagues for a generic projection.
       const projected = IDP.has(p[1]) ? null : snapshot.proj?.[id]?.[scoring] ?? null;
-      out[id] = { id, name: shortName(p[0]), pos: p[1], team: p[2], injury: injuryAbbr(p[3]), projected };
+      out[id] = { id, name: shortName(p[0]), full_name: p[0], pos: p[1], team: p[2], injury: injuryAbbr(p[3]), projected };
     } else {
       missing.push(id);
     }
@@ -79,6 +79,7 @@ export async function resolveSleeperPlayers(ids, { snapshot: snap, priority = []
       out[id] = {
         id,
         name: shortName(p.full_name ?? `${p.first_name ?? ''} ${p.last_name ?? ''}`),
+        full_name: p.full_name ?? `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim(),
         pos: p.position ?? p.fantasy_positions?.[0] ?? '',
         team: p.team ?? '',
         injury: injuryAbbr(p.injury_status),

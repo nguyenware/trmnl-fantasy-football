@@ -87,7 +87,25 @@ export function winProbability(me, opp, meRows, oppRows) {
   return Math.round(phi(diff / sd) * 100);
 }
 
-export function buildMatchup(input, { games, tz, now = Date.now() }) {
+// "B. Robinson" twice (Bijan and Brian, same team): spell out first names
+// for any short names that collide within the matchup.
+export function disambiguate(players) {
+  const list = players.filter((p) => p?.full_name);
+  const count = new Map();
+  for (const p of list) count.set(p.name, new Set([...(count.get(p.name) ?? []), p.full_name]));
+  return players.map((p) => (p?.full_name && count.get(p.name)?.size > 1 ? { ...p, name: p.full_name } : p));
+}
+
+export function buildMatchup(rawInput, { games, tz, now = Date.now() }) {
+  const all0 = disambiguate([...rawInput.me_starters, ...(rawInput.opp_starters ?? []), ...(rawInput.me_bench ?? [])]);
+  const nMe = rawInput.me_starters.length;
+  const nOpp = rawInput.opp_starters?.length ?? 0;
+  const input = {
+    ...rawInput,
+    me_starters: all0.slice(0, nMe),
+    opp_starters: all0.slice(nMe, nMe + nOpp),
+    me_bench: all0.slice(nMe + nOpp),
+  };
   const slots = input.slots.map(slotLabel);
   const meRows = input.me_starters.map((p, i) => decorate(p, p?.points ?? input.me_points?.[i], games, tz));
   const oppRows = input.opp ? input.opp_starters.map((p, i) => decorate(p, p?.points ?? input.opp_points?.[i], games, tz)) : [];

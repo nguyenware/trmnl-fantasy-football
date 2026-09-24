@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { beforeEach, test } from 'node:test';
 import { handle } from '../src/index.js';
-import { winProbability } from '../src/matchup.js';
+import { disambiguate, winProbability } from '../src/matchup.js';
 import { gameText, remainingFraction } from '../src/nfl.js';
 import { resetSnapshotMemo, shortName } from '../src/players.js';
 import { clearMemoryCache } from '../src/util.js';
@@ -329,4 +329,14 @@ test('win probability', () => {
 test('shortName', () => {
   assert.equal(shortName('Amon-Ra St. Brown'), 'A. St. Brown');
   assert.equal(shortName('Kenneth Walker III'), 'K. Walker III');
+});
+
+test('colliding short names get full first names', () => {
+  const out = disambiguate([
+    { name: 'B. Robinson', full_name: 'Bijan Robinson' },
+    { name: 'B. Robinson', full_name: 'Brian Robinson' },
+    { name: 'L. Jackson', full_name: 'Lamar Jackson' },
+    null,
+  ]);
+  assert.deepEqual(out.map((p) => p?.name), ['Bijan Robinson', 'Brian Robinson', 'L. Jackson', undefined]);
 });

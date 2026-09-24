@@ -181,6 +181,7 @@ export function parseRosters(doc) {
     children(t, 'roster/players/player').map((p) => ({
       yahoo_id: text(p, 'player_id'),
       name: shortName(text(p, 'name/full') ?? ''),
+      full_name: text(p, 'name/full') ?? '',
       pos: text(p, 'display_position')?.split(',')[0] ?? '',
       team: text(p, 'editorial_team_abbr') ?? '',
       slot: text(p, 'selected_position/position'),
