@@ -340,3 +340,36 @@ test('colliding short names get full first names', () => {
   ]);
   assert.deepEqual(out.map((p) => p?.name), ['Bijan Robinson', 'Brian Robinson', 'L. Jackson', undefined]);
 });
+
+test('refreshSnapshot builds the trimmed snapshot and stores it in KV', async () => {
+  const { refreshSnapshot } = await import('../src/snapshot.js');
+  const { SNAPSHOT_KEY } = await import('../src/players.js');
+  const responses = {
+    state: { season: '2026', week: 10, display_week: 10, season_type: 'regular' },
+    players: {
+      '4046': { full_name: 'Patrick Mahomes', position: 'QB', fantasy_positions: ['QB'], team: 'KC', active: true, injury_status: null, yahoo_id: 30123 },
+      '9999': { full_name: 'Retired Guy', position: 'WR', fantasy_positions: ['WR'], team: null, active: false },
+      '1': { full_name: 'Long Snapper', position: 'LS', fantasy_positions: ['LS'], team: 'SEA', active: true },
+      SEA: { position: 'DEF', team: 'SEA', active: true, first_name: 'Seattle', last_name: 'Seahawks' },
+    },
+    proj: [
+      { player_id: '4046', stats: { pts_std: 20.04, pts_half_ppr: 20.04, pts_ppr: 20.04 } },
+      { player_id: '1', stats: {} },
+    ],
+  };
+  const urls = [];
+  const get = async (url) => {
+    urls.push(url);
+    if (url.endsWith('/state/nfl')) return responses.state;
+    if (url.endsWith('/players/nfl')) return responses.players;
+    return responses.proj;
+  };
+  const store = kv();
+  const snap = await refreshSnapshot({ FANTASY_KV: store }, get);
+  assert.equal(urls.length, 3);
+  assert.match(urls[2], /projections\/nfl\/2026\/10\?season_type=regular/);
+  assert.deepEqual(Object.keys(snap.players).sort(), ['4046', 'SEA']);
+  assert.deepEqual(snap.players['4046'], ['Patrick Mahomes', 'QB', 'KC', null, '30123']);
+  assert.deepEqual(snap.proj, { 4046: [20, 20, 20] });
+  assert.deepEqual(JSON.parse(store.store.get(SNAPSHOT_KEY)), snap);
+});
