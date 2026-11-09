@@ -5,8 +5,8 @@
   "compatibility_date": "2026-09-01",
   "observability": { "enabled": true },
 
-  // Player snapshot (from the GitHub Action) and the Yahoo OAuth token.
-  // KV namespace ids are not secret; this is the snapshot action's KV_NAMESPACE_ID.
+  // Player snapshot (written by the cron below) and the Yahoo OAuth token.
+  // KV namespace ids are not secret.
   "kv_namespaces": [
     { "binding": "FANTASY_KV", "id": "277443a9b5d14992907d9e4c1f4c581e" }
   ],
@@ -17,6 +17,11 @@
   "services": [
     { "binding": "TEAM_DASHBOARD", "service": "trmnl-team-dashboard" }
   ],
+
+  // Player snapshot refresh (src/snapshot.js), times in UTC: daily early morning Pacific,
+  // Sunday after inactives for the early and late games, and before Monday and Thursday night
+  // games. Needs Workers Paid (the parse is ~30 ms of CPU; Free allows 10 ms).
+  "triggers": { "crons": ["17 11 * * *", "47 15,16 * * SUN", "47 22 * * MON,THU"] },
 
   "vars": {
     "TIMEZONE": "America/Los_Angeles",

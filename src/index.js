@@ -7,6 +7,7 @@
 import { buildMatchup } from './matchup.js';
 import { loadWeekGames } from './nfl.js';
 import { loadSnapshot } from './players.js';
+import { refreshSnapshot } from './snapshot.js';
 import { sleeperMatchup } from './sleeper.js';
 import { formatTime } from './util.js';
 import { checkState, exchangeCode, loginUrl, yahooMatchup } from './yahoo.js';
@@ -138,4 +139,6 @@ export async function handle(request, env = {}) {
 
 export default {
   fetch: (request, env) => handle(request, env),
+  // Player snapshot refresh (src/snapshot.js) on the schedule in wrangler.jsonc.
+  scheduled: (controller, env, ctx) => ctx.waitUntil(refreshSnapshot(env)),
 };

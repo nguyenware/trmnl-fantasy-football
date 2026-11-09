@@ -1,8 +1,8 @@
 // Player names, positions, NFL teams, injury status and weekly projections.
 //
-// Sleeper's full player list is ~15 MB, far too big to parse inside a Worker
-// on the free plan (10 ms CPU). A GitHub Action (scripts/snapshot.mjs) trims
-// it once or twice a day into a compact snapshot in Workers KV:
+// Sleeper's full player list is ~15 MB, too big to parse on every request.
+// The Worker's cron (src/snapshot.js) trims it once or twice a day into a
+// compact snapshot in Workers KV:
 //
 //   { season, week, updated, players: { id: [name, pos, team, injury, yahooId] },
 //     proj: { id: [std, half, ppr] } }

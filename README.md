@@ -25,17 +25,14 @@ Add `&tz=America/New_York` to change the time zone (default `TIMEZONE`, `America
 
 Your Sleeper league id is in the league's URL on sleeper.com (`sleeper.com/leagues/<id>/…`).
 
-## Deploy (Cloudflare Workers, free plan)
+## Deploy (Cloudflare Workers, Paid plan)
+
+The snapshot cron needs Workers Paid: parsing Sleeper's player list takes about 30 ms of CPU, and Free allows 10 ms. On Free, remove the `triggers` block and run `npm run snapshot` with Cloudflare credentials instead.
 
 1. Deploy [trmnl-team-dashboard](https://github.com/nguyenware/trmnl-team-dashboard) first if you want Sunday mode. It's wired up through a service binding in `wrangler.jsonc`; remove the `services` block if you skip it.
 2. Deploy this Worker with `npm install && npx wrangler deploy`, or import the repo under **Workers & Pages → Create → Import a repository**. `FANTASY_KV` points at the namespace `trmnl-fantasy-football-FANTASY_KV` (id `277443a9b5d14992907d9e4c1f4c581e`); on a different account, delete the `id` and Wrangler creates one on first deploy.
 3. Optionally, `npx wrangler secret put ACCESS_KEY` so only your TRMNL can read your league. If the team dashboard has its own `ACCESS_KEY`, put the same value in this Worker's `TEAM_DASHBOARD_KEY` secret so Sunday mode can still reach it.
-4. **Player snapshot (recommended).** Names, injuries and projections come from a trimmed snapshot of Sleeper's player list. A scheduled GitHub Action ([`snapshot.yml`](.github/workflows/snapshot.yml)) refreshes it daily and around game windows. Add three repository secrets:
-   - `CLOUDFLARE_API_TOKEN`: a token with **Workers KV Storage: Edit**.
-   - `CLOUDFLARE_ACCOUNT_ID`.
-   - `KV_NAMESPACE_ID`: `277443a9b5d14992907d9e4c1f4c581e`.
-
-   Then run the workflow once from the Actions tab. Without a snapshot, starters' names are looked up one at a time and projections are hidden, so it works, just with less detail.
+4. **Player snapshot.** Names, injuries and projections come from a trimmed snapshot of Sleeper's player list. The Worker's own cron ([`src/snapshot.js`](src/snapshot.js), schedule in `wrangler.jsonc`) refreshes it daily and around game windows, so there's nothing to set up. Without a snapshot, starters' names are looked up one at a time and projections are hidden, so it works, just with less detail.
 
 ### Yahoo
 
@@ -67,7 +64,7 @@ Paste each folder's `full`, `half_horizontal`, `half_vertical` and `quadrant` te
 - **NFL games:** ESPN's weekly scoreboard, keyed by team, supplies kickoff times, live clocks, finals and byes.
 - **Caching:**
   - Every upstream response is trimmed and cached with the Workers Cache API: 60 s during games, longer otherwise.
-  - A cold Sleeper request makes about 7 upstream calls, well under the free plan's limit of 50.
+  - A cold Sleeper request makes about 7 upstream calls.
   - The snapshot is read from KV and kept in memory for 10 minutes; parsing it takes about 3 ms of CPU.
 
 ## Development
@@ -76,7 +73,7 @@ Paste each folder's `full`, `half_horizontal`, `half_vertical` and `quadrant` te
 npm install
 npm test                                   # offline tests (Sleeper, Yahoo XML, OAuth, Sunday mode)
 npm run dev                                # wrangler dev
-npm run snapshot                           # build snapshot.json locally
+npm run snapshot                           # build snapshot.json locally (add Cloudflare credentials to upload it)
 npm run preview -- --screenshot payload.json                       # matchup layouts
 npm run preview -- --templates=trmnl/sunday --screenshot sunday.json
 node scripts/capture-fixtures.mjs <league id> <done week> <current week>   # re-record anonymized fixtures
